@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from pprint import pprint
+import copy
 import traceback
 
 
@@ -59,7 +60,7 @@ def get_company_info(stock_code):
         return None
 
 
-def get_company_history(stock_code):
+def get_company_history(stock_code, start_date, end_date):
     """
     Make post request to: http://www.stockex.co.tt/controller.php?action=view_stock_history&StockCode=118
     Post parameters (x-www-form-urlencoded):
@@ -67,8 +68,29 @@ def get_company_history(stock_code):
     EndDate: 10/15/2016
     :return:
     """
-    pass
+    url = 'http://www.stockex.co.tt/controller.php?action=view_stock_history&StockCode=' + str(stock_code)
+    params = {'StartDate': start_date, 'EndDate': end_date}
+    r = requests.post(url, data=params)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    tr = soup.find_all('table')
+    table = tr[3].find_all('p')
+    headers = table[0:5]
+    data = table[5:]
+    # for items in data:
+    #     print items
+    output_list = []
+    current_dict = {}
+    output_dict = {}
+    for info in range(0, len(data), 5):
+        output_dict[data[info].text.replace(u'\xa0', u'').strip()] = {
+            'closing_quote': data[info + 1].text.replace(u'\xa0', u'').strip(),
+            'change_dollar': data[info + 2].text.replace(u'\xa0', u'').strip(),
+            'change_percent': data[info + 3].text.replace(u'\xa0', u'').strip(),
+            'volume_traded': data[info + 4].text.replace(u'\xa0', u'').strip()
+        }
+    pprint(output_dict)
 
 if __name__ == "__main__":
-    pprint(get_all_companies())
-    pprint(get_company_info(106))
+    # pprint(get_all_companies())
+    # pprint(get_company_info(106))
+    get_company_history(118, '10/18/2016', '10/27/2016')
