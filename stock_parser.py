@@ -1,8 +1,11 @@
 import requests
+import requests_toolbelt.adapters.appengine
 from bs4 import BeautifulSoup
 from pprint import pprint
-import copy
 import traceback
+
+
+requests_toolbelt.adapters.appengine.monkeypatch()
 
 
 def extract_info(attr_dict):
@@ -39,6 +42,7 @@ def get_company_info(stock_code):
     try:
         info_dict = {}
         url = 'http://www.stockex.co.tt/controller.php?action=view_stock_charts&StockCode=' + str(stock_code)
+        print url
         r = requests.get(url)
         soup = BeautifulSoup(r.text, 'html.parser')
         tr = soup.find_all('tr')
@@ -70,16 +74,13 @@ def get_company_history(stock_code, start_date, end_date):
     """
     url = 'http://www.stockex.co.tt/controller.php?action=view_stock_history&StockCode=' + str(stock_code)
     params = {'StartDate': start_date, 'EndDate': end_date}
+    print url
     r = requests.post(url, data=params)
     soup = BeautifulSoup(r.text, 'html.parser')
     tr = soup.find_all('table')
     table = tr[3].find_all('p')
     headers = table[0:5]
     data = table[5:]
-    # for items in data:
-    #     print items
-    output_list = []
-    current_dict = {}
     output_dict = {}
     for info in range(0, len(data), 5):
         output_dict[data[info].text.replace(u'\xa0', u'').strip()] = {
@@ -88,9 +89,9 @@ def get_company_history(stock_code, start_date, end_date):
             'change_percent': data[info + 3].text.replace(u'\xa0', u'').strip(),
             'volume_traded': data[info + 4].text.replace(u'\xa0', u'').strip()
         }
-    pprint(output_dict)
+    return output_dict
 
 if __name__ == "__main__":
-    # pprint(get_all_companies())
+    pprint(get_all_companies())
     # pprint(get_company_info(106))
-    get_company_history(118, '10/18/2016', '10/27/2016')
+    # get_company_history(118, '10/18/2016', '10/27/2016')
