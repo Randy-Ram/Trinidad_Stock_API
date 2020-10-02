@@ -1,3 +1,8 @@
+"""
+Project is now deprecated since stock website layout has changed
+which renders the links and html parsing useless.
+"""
+
 import requests
 import requests_toolbelt.adapters.appengine
 from bs4 import BeautifulSoup
