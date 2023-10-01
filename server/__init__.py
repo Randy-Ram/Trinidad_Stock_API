@@ -10,5 +10,5 @@ def start():
     bootstrap.py and the `tests` directory do this.
     """
     app = Flask(__name__)
-    #Do stuff
+    # Do stuff
     return app
