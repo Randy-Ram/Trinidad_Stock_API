@@ -10,7 +10,7 @@ cycler==0.10.0
 distlib==0.3.1
 Faker==15.0.0
 filelock==3.0.12
-Flask==1.0
+Flask==2.2.5
 Flask-HTTPAuth==3.2.1
 fonttools==4.37.4
 google-cloud-core==0.20.0
